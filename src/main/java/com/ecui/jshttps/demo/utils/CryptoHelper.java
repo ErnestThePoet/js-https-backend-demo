@@ -40,39 +40,25 @@ public class CryptoHelper {
         }
     }
 
-    public String aesDecrypt(byte[] cipher,byte[] key,byte[] iv){
-        byte[] decryptedBytes=this.aesOperate(
+    public byte[] aesDecrypt(byte[] cipher,byte[] key,byte[] iv){
+        return this.aesOperate(
                 Cipher.DECRYPT_MODE,
                 cipher,
                 key,
                 iv
         );
-
-        if(decryptedBytes==null){
-            return null;
-        }
-        else{
-            return new String(decryptedBytes).trim();
-        }
     }
 
-    public String aesEncrypt(byte[] plainText,byte[] key,byte[] iv){
-        byte[] decryptedBytes=this.aesOperate(
+    public byte[] aesEncrypt(byte[] plainText,byte[] key,byte[] iv){
+        return this.aesOperate(
                 Cipher.ENCRYPT_MODE,
                 plainText,
                 key,
                 iv
         );
-
-        if(decryptedBytes==null){
-            return null;
-        }
-        else{
-            return Base64.getEncoder().encodeToString(decryptedBytes);
-        }
     }
 
-    public String rsaDecrypt(byte[] cipher,byte[] privateKey){
+    public byte[] rsaDecrypt(byte[] cipher,byte[] privateKey){
         Cipher aesCipher;
         KeyFactory keyFactory;
 
@@ -102,7 +88,7 @@ public class CryptoHelper {
         }
 
         try {
-            return new String(aesCipher.doFinal(cipher)).trim();
+            return aesCipher.doFinal(cipher);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             e.printStackTrace();
             return null;
