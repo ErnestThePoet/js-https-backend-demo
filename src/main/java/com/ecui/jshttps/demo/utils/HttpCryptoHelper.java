@@ -14,8 +14,6 @@ public class HttpCryptoHelper {
     private byte[] aesIvBytes;
     private byte[] aesKeyBytes;
 
-    private boolean isDecryptionDone=false;
-
     public HttpCryptoHelper(){
         this.cryptoHelper=new CryptoHelper();
         this.objectMapper=new ObjectMapper();
@@ -129,12 +127,10 @@ public class HttpCryptoHelper {
         }
 
         try {
-            String encrypted= this.cryptoHelper.aesEncrypt(
+            return this.cryptoHelper.aesEncrypt(
                     objectMapper.writeValueAsBytes(responseObj),
                     this.aesKeyBytes,
                     this.aesIvBytes);
-            this.isDecryptionDone=true;
-            return encrypted;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;

@@ -12,65 +12,63 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
 public class CryptoHelper {
-    private final String AES_CIPHER_TRANSFORMATION="AES/CBC/PKCS5Padding";
-    private final String AES_KEY_ALGORITHM="AES";
-
-    private final String RSA_CIPHER_TRANSFORMATION="RSA/ECB/PKCS1Padding";
-    private final String RSA_KEY_ALGORITHM="RSA";
-
-    public String aesDecrypt(byte[] cipher,byte[] key,byte[] iv){
+    private byte[] aesOperate(int opMode,byte[] data,byte[] key,byte[] iv){
         Cipher aesCipher;
 
         try {
-            aesCipher=Cipher.getInstance(AES_CIPHER_TRANSFORMATION);
+            aesCipher=Cipher.getInstance("AES/CBC/PKCS5Padding");
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             e.printStackTrace();
             return null;
         }
 
-        SecretKeySpec secretKeySpec=new SecretKeySpec(key,AES_KEY_ALGORITHM);
+        SecretKeySpec secretKeySpec=new SecretKeySpec(key,"AES");
         IvParameterSpec ivParameterSpec=new IvParameterSpec(iv);
 
         try {
-            aesCipher.init(Cipher.DECRYPT_MODE,secretKeySpec,ivParameterSpec);
+            aesCipher.init(opMode,secretKeySpec,ivParameterSpec);
         } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
             return null;
         }
 
         try {
-            return new String(aesCipher.doFinal(cipher)).trim();
+            return aesCipher.doFinal(data);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    public String aesDecrypt(byte[] cipher,byte[] key,byte[] iv){
+        byte[] decryptedBytes=this.aesOperate(
+                Cipher.DECRYPT_MODE,
+                cipher,
+                key,
+                iv
+        );
+
+        if(decryptedBytes==null){
+            return null;
+        }
+        else{
+            return new String(decryptedBytes).trim();
+        }
+    }
+
     public String aesEncrypt(byte[] plainText,byte[] key,byte[] iv){
-        Cipher aesCipher;
+        byte[] decryptedBytes=this.aesOperate(
+                Cipher.ENCRYPT_MODE,
+                plainText,
+                key,
+                iv
+        );
 
-        try {
-            aesCipher=Cipher.getInstance(AES_CIPHER_TRANSFORMATION);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            e.printStackTrace();
+        if(decryptedBytes==null){
             return null;
         }
-
-        SecretKeySpec secretKeySpec=new SecretKeySpec(key,AES_KEY_ALGORITHM);
-        IvParameterSpec ivParameterSpec=new IvParameterSpec(iv);
-
-        try {
-            aesCipher.init(Cipher.ENCRYPT_MODE,secretKeySpec,ivParameterSpec);
-        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        try {
-            return Base64.getEncoder().encodeToString(aesCipher.doFinal(plainText));
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
-            return null;
+        else{
+            return Base64.getEncoder().encodeToString(decryptedBytes);
         }
     }
 
@@ -79,8 +77,8 @@ public class CryptoHelper {
         KeyFactory keyFactory;
 
         try {
-            aesCipher=Cipher.getInstance(RSA_CIPHER_TRANSFORMATION);
-            keyFactory=KeyFactory.getInstance(RSA_KEY_ALGORITHM);
+            aesCipher=Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            keyFactory=KeyFactory.getInstance("RSA");
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             e.printStackTrace();
             return null;
