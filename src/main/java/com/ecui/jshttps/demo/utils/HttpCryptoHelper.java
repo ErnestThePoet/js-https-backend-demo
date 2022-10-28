@@ -49,7 +49,8 @@ public class HttpCryptoHelper {
      *          used at frontend in js-https.
      *          The header {@code -----BEGIN PRIVATE KEY-----}
      *          and footer {@code -----END PRIVATE KEY-----}
-     *          may be provided or omitted.
+     *          are optional.
+     *          The line separators at the end of each line are also optional.
      *
      * @param   type
      *          a TypeReference instance for the decrypted object type.
