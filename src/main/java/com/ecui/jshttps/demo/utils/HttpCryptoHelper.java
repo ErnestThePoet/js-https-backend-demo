@@ -88,7 +88,7 @@ public class HttpCryptoHelper {
             return null;
         }
 
-        String decryptedString = new String(decryptedBytes);
+        String decryptedString = new String(decryptedBytes,StandardCharsets.UTF_8);
 
         try {
             return this.objectMapper.readValue(decryptedString, type);
